@@ -1,4 +1,5 @@
 ﻿using JokesApi.Data;
+using JokesApi.Data.Migrations;
 using JokesApi.Web.View_Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -61,6 +62,17 @@ namespace JokesApi.Web.Controllers
             }
 
             return toReturn;
+        }
+
+        [HttpGet("jokebyid")]
+        public Joke GetById(int id)
+        {
+            HttpClient client = new HttpClient();
+            Joke joke = client.GetFromJsonAsync<Joke>($"https://official-joke-api.appspot.com/jokes/{id}", new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }).Result;
+            return joke;
         }
 
         [HttpPost("addtofave")]

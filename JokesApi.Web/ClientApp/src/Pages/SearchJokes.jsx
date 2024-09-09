@@ -36,12 +36,17 @@ const SearchJokes = () => {
 
     const onSearchClick = async () => {
         setLoading(true);
-        const { data } = await axios.get(`/api/jokes/search?amount=${amount}&type=${type}`);
-        setJokes(data);
+        if (type === 'byid') {
+            const { data } = await axios.get(`/api/jokes/jokebyid?id=${amount}`);
+            setJokes(data);
+        } else {
+            const { data } = await axios.get(`/api/jokes/search?amount=${amount}&type=${type}`);
+            setJokes(data);
+        }
         setLoading(false);
     }
 
-    function caps(string) {
+    function capitalize(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
@@ -80,6 +85,7 @@ const SearchJokes = () => {
                 <div className='col-md-2 offset-6'>
                     <select className='form-control' value={type} onChange={e => setType(e.target.value)}>
                         <option value='-1'>--Choose--</option>
+                        <option value='byid'>Search By Id</option>
                         <option value='dad'>Dad jokes</option>
                         <option value='general'>General</option>
                         <option value='knock-knock'>Knock Knock</option>
@@ -88,7 +94,7 @@ const SearchJokes = () => {
                     </select>
                 </div>
                 <div className='col-md-2'>
-                    <input type='number' min='1' max='52' className='form-control' value={amount} onChange={e => setAmount(e.target.value)} placeholder="Amount" />
+                    <input type='number' min='1' max={type === 'byid' ? '1000' : '52'} className='form-control' value={amount} onChange={e => setAmount(e.target.value)} placeholder={type === 'byid' ? 'Id' : 'Amount' } />
                 </div>
                 <div className='col-md-2'>
                     <button className='btn btn-primary w-100' disabled={type === '-1' || type === ''} onClick={onSearchClick}>{loading ? 'Loading...' : 'Search'}</button>
@@ -97,13 +103,13 @@ const SearchJokes = () => {
             <br />
             <div name='cards'>
                 <div className="row">
-                    {!!jokes.length && jokes.map(j =>
+                    {!jokes.length ? <h4>No jokes were found with the parameters specified.</h4> : jokes.map(j =>
                         <div className="card col-3" key={getGuid()}>
                             <div className="card-body">
-                                <h5 className="card-title">Joke #{j.id} - {caps(j.type)}</h5>
-                                <p className="card-text">{caps(j.setup)}</p>
+                                <h5 className="card-title">Joke #{j.id} - {capitalize(j.type)}</h5>
+                                <p className="card-text">{capitalize(j.setup)}</p>
                                 <br />
-                                <h6>{caps(j.punchline)}</h6>
+                                <h6>{capitalize(j.punchline)}</h6>
                             </div>
                             <div className="card-footer">
                                 <button className={`btn btn-${faves && faves.includes(j.id) ? 'danger' : 'success'} w-100`} disabled={!user} onClick={_ => markFavorite(j)}>{getMessage(j.id)}</button>
