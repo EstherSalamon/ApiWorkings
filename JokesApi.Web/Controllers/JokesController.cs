@@ -51,7 +51,7 @@ namespace JokesApi.Web.Controllers
                     List<Joke> oneAtATime = client.GetFromJsonAsync<List<Joke>>(url, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
-                    }).Result; //Because the api only allows searching specific amounts when searching random, not by type
+                    }).Result; //Because the API used only allows searching specific amounts when searching random, not by type
 
                     if(toReturn.All(j => j.Id != oneAtATime[0].Id))
                     {
